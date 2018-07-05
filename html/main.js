@@ -18,6 +18,8 @@ let board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ];
 
+let boardObj = [height, width];
+
 let turn = 0;
 
 init();
@@ -53,18 +55,49 @@ function init(){
                 putStone([y, x, cell]);
             }, false);
             rowDiv.appendChild(cell);
+            //boardObj[y][x] = cell;
         }
         div.appendChild(rowDiv);
     }
 }
 
-//おけるかチェック
-function checkPutEnable(potision){
+//おけるかチェック(初回)
+function checkPutFirstEnable(potision){
     //もう置かれているか山か
     if(board[potision[0]][potision[1]] != 1){
         return false;
     }
-    
+
+    //一応その場におけるので
+    for(let i = -1; i <= 1; i++){
+        for(let j = -1; j <= 1; j++){
+            checkPutEnable(potision, [i, j]);
+        }
+    }
+}
+
+//おけるかチェック
+function checkPutEnable(potision, next){
+    //ぶつかったところが山なら駄目
+    if(board[potision[0]][potision[1]] == 0){
+        return false;
+    }
+
+    //ぶつかったところが自分のところ
+    if(board[potision[0]][potision[1]] == turn){
+        return true;
+    }
+
+    potision[0] += next[0];
+    potision[0] += next[1];
+
+    //返却値がtrueのとき
+    if(checkPutEnable(potision, next)){
+        putStone(potision);
+        return true;
+    }
+
+    return false;
 }
 
 //石を置く
